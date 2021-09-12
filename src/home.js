@@ -1,322 +1,582 @@
 import * as THREE from 'https://cdn.skypack.dev/three';
 
+/* --------------- */
 // Global Variables
-const vehicleColors = [0xa52523, 0xbdb638, 0x78b14b];
+/* --------------- */
+var Colors = {
+    red:0xf25346,
+    white:0xd8d0d1,
+    brown: 0x59332e,
+    pink:0xf5986e,
+    brownDark:0x23190f,
+    blue:0x68c3c0,
+    grass:0x567d46,
+    road:0x47484c,
+    ocean: 0x064273,
+    ground: 0xcecdcb
+};
+
+// Scene 
+var scene, camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH, renderer, container;
+// Lights
+var hemisphereLight, shadowLight, ambientLight;
+// Objects
+
+/* --------------- */
+// Global Functions
+/* --------------- */
+function init() {
+    // set up the scene, the camera and the renderer
+    createScene();
+
+    // add the lights
+    createLights();
+
+    // add the objects
+    createPlane();
+    // createSea();
+    // createOcean();
+    // createGrass();
+    createRoad();
+    createSky();
+
+    // Add the listener
+    document.addEventListener('mousemove', handleMouseMove, false);
+
+    // start a loop that will update the objects' positions
+    // and render the scene on each frame
+    // seaLoop();
+    // oceanLoop();
+    // grassLoop();
+    roadLoop();
+}
+
+/* ----- Running the visuals ----- */
+window.addEventListener('load', init, false);
+
+
+/* ----- Creating the Scene ----- */
+
+function createScene() {
+    // Get the width and the height of the screen, 
+    // use them to set up the aspect ratio of the camera
+    // and the size of the renderer.
+    HEIGHT = window.innerHeight;
+    WIDTH = window.innerWidth;
+
+    // Create the scene 
+    scene = new THREE.Scene();
+
+    // Add a fog effect to the scene; same color as the 
+    // background color used in the style sheet
+    scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
+
+    // Create the camera 
+    aspectRatio = WIDTH / HEIGHT;
+    fieldOfView = 60;
+    nearPlane = 1;
+    farPlane = 10000;
+    camera = new THREE.PerspectiveCamera(
+        fieldOfView,
+        aspectRatio,
+        nearPlane,
+        farPlane
+    );
+
+    // Set the position of the camera
+    camera.position.x = 0;
+    camera.position.z = 200;
+    camera.position.y = 100;
+
+    // Create the renderer
+    renderer = new THREE.WebGLRenderer({
+        // Allow transparency to show the gradient background
+        // we defined in the CSS
+        alpha: true,
+
+        // Activate the anti-aliasing; this is less performant
+        antialias: true
+    });
+
+    // Define the size of the renderer; in this case,
+    // it will fill the entire screen
+    renderer.setSize(WIDTH, HEIGHT);
+
+    // Enable shadow rendering 
+    renderer.shadowMap.enabled = true;
+
+    // Add the DOM element of the renderer to the
+    // container we created in the HTML
+    container = document.getElementById('world');
+    container.appendChild(renderer.domElement);
+
+    // Listen to the screen: if the user resizes it
+    // we have to update the camera and the renderer size
+    window.addEventListener('resize', handleWindowResize, false);
+}
 
 // Helper Functions
-function pickRandom(array) {
-    return array[Math.floor(Math.random() * array.length)];
+function handleWindowResize() {
+    // update height and width of the renderer and the camera
+    HEIGHT = window.innerHEIGHT;
+    WIDTH = window.innerWIDTH;
+    renderer.setSize(WIDTH, HEIGHT);
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectMatrix4();
 }
 
-const scene = new THREE.Scene();
+/* ----- Setting up the lights ----- */
 
-const playerCar = Car();
-scene.add(playerCar);
+function createLights() {
+    // A hemisphere light is a gradient colored light;
+    // the first parametet is the sky color, the second parameter is the ground color,
+    // the third parameter is the intensity of the light
+    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9);
 
-/* ----- Building the Track ----- */
-const trackRadius = 225;
-const trackWidth = 45;
-const innerTrackRadius = trackRadius - trackWidth;
-const outerTrackRadius = trackRadius + trackWidth;
+    // A directional light shines from a specific direction.
+    // It acts like the sun, that means that all the rays produced are parallel.
+    shadowLight = new THREE.DirectionalLight(0xffffff, .9);
 
-const arcAngle1 = (1 / 3) * Math.PI; // 60 degrees
+    // Set the direction of the light
+    shadowLight.position.set(150, 350, 350);
 
-const deltaY = Math.sin(arcAngle1) * innerTrackRadius;
-const arcAngle2 = Math.asin(deltaY / outerTrackRadius);
+    // Allow shadow casting
+    shadowLight.castShadow = true;
 
-const arcCenterX = (Math.cos(arcAngle1) * innerTrackRadius + Math.cos(arcAngle2) * outerTrackRadius) / 2;
+    // Define the visible area of the projected shadow
+    shadowLight.shadow.camera.left = -400;
+    shadowLight.shadow.camera.right = 400;
+    shadowLight.shadow.camera.top = 400;
+    shadowLight.shadow.camera.bottom = -400;
+    shadowLight.shadow.camera.near = 1;
+    shadowLight.shadow.camera.far = 1000;
 
-const arcAngle3 = Math.acos(arcCenterX / innerTrackRadius);
+    // Define the resolution of the shadow
+    shadowLight.shadow.mapSize.width = 2048;
+    shadowLight.shadow.mapSize.height = 2048;
 
-const arcAngle4 = Math.acos(arcCenterX / outerTrackRadius);
+    // Activating the lights
+    scene.add(hemisphereLight);
+    scene.add(shadowLight);
 
-/* ----- Setting up lights ----- */
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-scene.add(ambientLight);
-
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-dirLight.position.set(100, -300, 400);
-scene.add(dirLight);
-
-/* ----- Setting up camera ----- */
-const aspectRatio = window.innerWidth / window.innerHeight;
-const cameraWidth = 950;
-const cameraHeight = cameraWidth / aspectRatio;
-  
-const camera = new THREE.OrthographicCamera(
-    cameraWidth / -2,// left
-    cameraWidth / 2, // right
-    cameraHeight / 2, //top
-    cameraHeight / -2, // bottom
-    0, // near plane
-    1000 // far plane 
-);
-camera.position.set(0, -210, 300);
-camera.lookAt(0, 0, 0);
-
-renderMap(cameraWidth, cameraHeight * 2);
-
-/* ----- Setting up the render ----- */
-const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.render(scene, camera);
-
-document.body.appendChild(renderer.domElement);
-
-/* ----- Buiding/Constructing the transportation vehicle ----- */
-function Car() {
-    const car = new THREE.Group();
-
-    const color = pickRandom(vehicleColors);
-
-    const main = new THREE.Mesh(
-        new THREE.BoxBufferGeometry(60, 30, 15),
-        new THREE.MeshLambertMaterial({color})
-    );
-    main.position.z = 12;
-    car.add(main);
-
-    const carFrontTexture = getCarFrontTexture();
-    carFrontTexture.center = new THREE.Vector2(0.5, 0.5);
-    carFrontTexture.rotation = Math.PI / 2;
-
-    const carBackTexture = getCarFrontTexture();
-    carBackTexture.center = new THREE.Vector2(0.5, 0.5);
-    carBackTexture.rotation = -Math.PI / 2;
-
-    const carRightSideTexture = getCarSideTexture();
-
-    const carLeftSideTexture = getCarSideTexture();
-    carLeftSideTexture.flipY = false;
-
-    const cabin = new THREE.Mesh(new THREE.BoxBufferGeometry(33, 24, 12), [
-        new THREE.MeshLambertMaterial({map: carFrontTexture}),
-        new THREE.MeshLambertMaterial({map: carBackTexture}),
-        new THREE.MeshLambertMaterial({map: carLeftSideTexture}),
-        new THREE.MeshLambertMaterial({map: carRightSideTexture}),
-        new THREE.MeshLambertMaterial({color: 0xffffff}), // top
-        new THREE.MeshLambertMaterial({color: 0xffffff}), // bottom
-    ]);
-    cabin.position.x = -6;
-    cabin.position.z = 25.5;
-    car.add(cabin);
-
-    const backWheel = wheel();
-    backWheel.position.z = 6;
-    backWheel.position.x = -18;
-    car.add(backWheel);
-
-    const frontWheel = wheel();
-    frontWheel.position.z = 6;
-    frontWheel.position.x = 18;
-    car.add(frontWheel);
-
-    return car;
-}
-// Car Build Helper Functions
-function wheel() {
-    const wheel = new THREE.Mesh(
-        new THREE.BoxBufferGeometry(12, 33, 12),
-        new THREE.MeshLambertMaterial({color: 0x333333})
-    );
-    return wheel;
-}
-function getCarFrontTexture() {
-    const canvas = document.createElement("canvas");
-    canvas.width = 64;
-    canvas.height = 32;
-    const context = canvas.getContext("2d");
-
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, 64, 32);
-
-    context.fillStyle = "#666666";
-    context.fillRect(8, 8, 48, 24);
-
-    return new THREE.CanvasTexture(canvas);
-}
-function getCarSideTexture() {
-    const canvas = document.createElement("canvas");
-    canvas.width = 128;
-    canvas.height = 32;
-    const context = canvas.getContext("2d");
-
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, 128, 32);
-
-    context.fillStyle = "#666666";
-    context.fillRect(10, 8, 38, 24);
-    context.fillRect(58, 8, 60, 24);
-
-    return new THREE.CanvasTexture(canvas);
+    // An ambient light modifies the global color of a scene and makes the shadows softer
+    ambientLight = new THREE.AmbientLight(0xdc8874, .5);
+    scene.add(ambientLight);
 }
 
-function getLineMarkings(mapWidth, mapHeight) {
-    const canvas = document.createElement("canvas");
-    canvas.width = mapWidth;
-    canvas.height = mapHeight;
-    const context = canvas.getContext("2d");
+/* ----- Creating the floor object ----- */
 
-    context.fillStyle = "#546E90";
-    context.fillRect(0, 0, mapWidth, mapHeight);
+// Constructors
+var Sea = function() {
+    // create the geometry (shape) of the cylinder;
+    // the parameters are: 
+    // radius top, radius bottom, height, number of segments on the radius, number of segments vertically
+    var geom = new THREE.CylinderGeometry(600, 600, 800, 40, 10);
 
-    context.lineWidth = 2;
-    context.strokeStyle = "#E0FFFF";
-    context.setLineDash([10, 14]);
+    // Rotate the geometry on the x axis
+    geom.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 
-    // Left circle
-    context.beginPath();
-    context.arc(
-        mapWidth / 2 - arcCenterX,
-        mapHeight / 2,
-        trackRadius,
-        0,
-        Math.PI * 2
-    );
-    context.stroke();
-
-    // Right circle 
-    context.beginPath();
-    context.arc(
-        mapWidth / 2 + arcCenterX,
-        mapHeight / 2,
-        trackRadius,
-        0,
-        Math.PI * 2
-    );
-    context.stroke();
-
-    return new THREE.CanvasTexture(canvas);
-}
-
-/* ----- Building the Map ----- */ 
-function renderMap(mapWidth, mapHeight) {
-    // Plane with line markings
-    const lineMarkingsTexture = getLineMarkings(mapWidth, mapHeight);
-
-    const planeGeometry = new THREE.PlaneBufferGeometry(mapWidth, mapHeight);
-    const planeMaterial = new THREE.MeshLambertMaterial({
-        map: lineMarkingsTexture
+    // Create the material
+    var mat = new THREE.MeshPhongMaterial({
+        color:Colors.blue,
+        transparent:true,
+        opacity:.8,
+        flatShading: THREE.FlatShading
     });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    scene.add(plane);
 
-    //Extruded geometry
-    const islandLeft = getLeftIsland();
-    const islandRight = getRightIsland();
-    const islandMiddle = getMiddleIsland();
-    const outerField = getOuterField(mapWidth, mapHeight);
+    // Create a Mesh object/material
+    this.mesh = new THREE.Mesh(geom, mat);
 
-    const fieldGeometry = new THREE.ExtrudeBufferGeometry(
-        [islandLeft, islandMiddle, islandRight, outerField],
-        {depth: 6, bevelEnabled: false}
-    );
+    // Allow the sea to receive shadows
+    this.mesh.receiveShadow = true;
+};
+var Ocean = function() {
+    // create the geometry (shape) of the cylinder;
+    // the parameters are: 
+    // radius top, radius bottom, height, number of segments on the radius, number of segments vertically
+    var geom = new THREE.CylinderGeometry(600, 600, 800, 40, 10);
 
-    const fieldMesh = new THREE.Mesh(fieldGeometry, [
-        new THREE.MeshLambertMaterial({color: 0x67c240}),
-        new THREE.MeshLambertMaterial({color: 0x23311c})
-    ]);
-    scene.add(fieldMesh);
+    // Rotate the geometry on the x axis
+    geom.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI/2));
+
+    // Create the material
+    var mat = new THREE.MeshPhongMaterial({
+        color:Colors.ocean,
+        transparent:true,
+        opacity:.8,
+        flatShading: THREE.FlatShading
+    });
+
+    // Create a Mesh object/material
+    this.mesh = new THREE.Mesh(geom, mat);
+
+    // Allow the sea to receive shadows
+    this.mesh.receiveShadow = true;
+};
+var Grass = function() {
+    // create the geometry (shape) of the cylinder;
+    // the parameters are: 
+    // radius top, radius bottom, height, number of segments on the radius, number of segments vertically
+    var geom = new THREE.CylinderGeometry(600, 600, 800, 40, 10);
+
+    // Rotate the geometry on the x axis
+    geom.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI/2));
+
+    // Create the material
+    var mat = new THREE.MeshPhongMaterial({
+        color:Colors.grass,
+        transparent:true,
+        opacity:.8,
+        flatShading: THREE.FlatShading
+    });
+
+    // Create a Mesh object/material
+    this.mesh = new THREE.Mesh(geom, mat);
+
+    // Allow the sea to receive shadows
+    this.mesh.receiveShadow = true;
+};
+var Road = function() {
+    // create the geometry (shape) of the cylinder;
+    // the parameters are: 
+    // radius top, radius bottom, height, number of segments on the radius, number of segments vertically
+    var geom = new THREE.CylinderGeometry(600, 600, 800, 40, 10);
+
+    // Rotate the geometry on the x axis
+    geom.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI/2));
+
+    // Create the material
+    var mat = new THREE.MeshPhongMaterial({
+        color:Colors.road,
+        transparent:true,
+        opacity:.8,
+        flatShading: THREE.FlatShading
+    });
+
+    // Create a Mesh object/material
+    this.mesh = new THREE.Mesh(geom, mat);
+
+    // Allow the sea to receive shadows
+    this.mesh.receiveShadow = true;
+
+    // Additional road markings
+    /*var geomEngine = new THREE.BoxGeometry(20, 50, 50, 1, 1, 1);
+    var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, flatShading:THREE.FlatShading});
+    var engine = new THREE.Mesh(geomEngine, matEngine);
+    engine.position.x = 40;
+    engine.castShadow = true;
+    engine.receiveShadow = true;
+    this.mesh.add(engine);*/
+};
+
+// Instantiate the floor and add it to the scene:
+var sea, ocean, grass, road;
+
+function createSea() {
+    sea = new Sea();
+
+    // Push it a little bit at the bottom of the scene to add effect
+    sea.mesh.position.y = -600;
+
+    // Add the mesh of the sea to the scene
+    scene.add(sea.mesh);
+}
+function createOcean() {
+    ocean = new Ocean();
+
+    // Push it a little bit at the bottom of the scene to add effect
+    ocean.mesh.position.y = -600;
+
+    // Add the mesh of the sea to the scene
+    scene.add(ocean.mesh);
+}
+function createGrass() {
+    grass = new Grass();
+
+    // Push it a little bit at the bottom of the scene to add effect
+    grass.mesh.position.y = -600;
+
+    // Add the mesh of the sea to the scene
+    scene.add(grass.mesh);
+}
+function createRoad() {
+    road = new Road();
+
+    // Push it a little bit at the bottom of the scene to add effect
+    road.mesh.position.y = -600;
+
+    // Add the mesh of the sea to the scene
+    scene.add(road.mesh);
 }
 
-// Building Islands 
-function getLeftIsland() {
-    const islandLeft = new THREE.Shape();
+/* ----- Creating Clouds and objects ----- */
 
-    islandLeft.absarc(
-        -arcCenterX,
-        0,
-        innerTrackRadius,
-        arcAngle1,
-        -arcAngle1,
-        false
-    );
+// Constructor 
+var Cloud = function() {
+    // Create the empty container that will hold the different parts of the cloud
+    this.mesh = new THREE.Object3D();
 
-    islandLeft.absarc(
-        arcCenterX,
-        0,
-        outerTrackRadius,
-        Math.PI + arcAngle2,
-        Math.PI - arcAngle2,
-        true
-    );
+    // Create a cube geometry;
+    // this shape will be duplicated to create the cloud
+    var geom = new THREE.BoxGeometry(20, 20, 20);
 
-    return islandLeft;
+    // Create a material
+    var mat = new THREE.MeshPhongMaterial({
+        color:Colors.white,
+    });
+
+    // Duplicate the geometry a random number of times
+    var nBlocs = 3 + Math.floor(Math.random() * 3);
+    for (var i = 0; i < nBlocs; i++) {
+        // Create the mesh by cloning the geometry
+        var m = new THREE.Mesh(geom, mat);
+
+        // Set the position and the rotation of each cube randomly
+        m.position.x = i * 15;
+        m.position.y = Math.random() * 10;
+        m.position.z = Math.random() * 10;
+        m.rotation.z = Math.random() * Math.PI*2;
+        m.rotation.y = Math.random() * Math.PI*2;
+
+        // Set the size of the cube randomly
+        var s = .1 + Math.random() * .9;
+        m.scale.set(s, s, s);
+
+        // Allow each cube to cast and to receive shadows
+        m.castShadow = true;
+        m.receiveShadow = true;
+
+        // Add the cube to the container we first created
+        this.mesh.add(m);
+    }
 }
-function getMiddleIsland() {
-    const islandMiddle = new THREE.Shape();
 
-    islandMiddle.absarc(
-        -arcCenterX,
-        0,
-        innerTrackRadius,
-        arcAngle3,
-        -arcAngle3,
-        true
-    );
+/* ----- Creating the Sky object ----- */
 
-    islandMiddle.absarc(
-        arcCenterX,
-        0,
-        innerTrackRadius,
-        Math.PI + arcAngle3,
-        Math.PI - arcAngle3,
-        true
-    );
+// Constructor
+var Sky = function() {
+    // Create an empty container
+    this.mesh = new THREE.Object3D();
 
-    return islandMiddle;
+    // Choose a number of clouds to be scattered in the sky
+    this.nClouds = 20;
+
+    // To distribute the clouds consistently, 
+    // we need to place them according to a uniform angle
+    var stepAngle = Math.PI * 2 / this.nClouds;
+
+    // Create the clouds
+    for (var i = 0; i < this.nClouds; i++) {
+        var c = new Cloud();
+        
+        // Set the rotation and the position of each cloud;
+        // for that we use a bit of trigonometry 
+        var a = stepAngle * i; // this is the final angle of the cloud
+        var h = 750 + Math.random() * 200;
+        // this is the distance between the center of the axis and the cloud itself
+
+        // We are simply converting polar coordants (angle, distance) into Cartesian Coordinates (x, y)
+        c.mesh.position.y = Math.sin(a)*h;
+        c.mesh.position.x = Math.cos(a)*h;
+
+        // Rotate the cloud according to its position
+        c.mesh.rotation.z = a + Math.PI/2;
+
+        // for a better result, we position the clouds
+        // at random depths inside of the scene
+        c.mesh.position.z = -400-Math.random()*400;
+
+        // we also set a random scale for each cloud
+        var s = 1 + Math.random()*2;
+        c.mesh.scale.set(s, s, s);
+
+        // Add the mesh of each scene  
+        this.mesh.add(c.mesh);
+    }
 }
-function getRightIsland() {
-    const islandRight = new THREE.Shape();
 
-    islandRight.absarc(
-        arcCenterX,
-        0,
-        innerTrackRadius,
-        Math.PI - arcAngle1,
-        Math.PI + arcAngle1,
-        true
-    );
+// Instantiate the sky and push its center a bit
+// towards the bottom of the screen
+var sky; 
 
-    islandRight.absarc(
-        -arcCenterX,
-        0,
-        outerTrackRadius,
-        -arcAngle2,
-        arcAngle2,
-        false
-    );
-
-    return islandRight;
+function createSky() {
+    sky = new Sky();
+    sky.mesh.position.y = -600;
+    scene.add (sky.mesh);
 }
-function getOuterField(mapWidth, mapHeight) {
-    const field = new THREE.Shape();
 
-    field.moveTo(-mapWidth / 2, -mapHeight / 2);
-    field.lineTo(0, -mapHeight / 2);
+/* ----- Creating the Airplane ----- */
 
-    field.absarc(
-        -arcCenterX,
-        0,
-        outerTrackRadius,
-        -arcAngle4,
-        arcAngle4,
-        true
-    );
+// Constructor 
+var AirPlane  = function() {
+    this.mesh = new THREE.Object3D();
 
-    field.absarc(
-        arcCenterX,
-        0,
-        outerTrackRadius,
-        Math.PI - arcAngle4,
-        Math.PI + arcAngle4,
-        true
-    );
+    // Create the cabin
+    var geomCockpit = new THREE.BoxGeometry(80, 50, 50, 1, 1, 1);
+    var matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, flatShading:THREE.FlatShading});
+    var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
+    cockpit.castShadow = true;
+    cockpit.receiveShadow = true;
+    this.mesh.add(cockpit);
 
-    field.lineTo(0, -mapHeight / 2);
-    field.lineTo(mapWidth / 2, -mapHeight / 2);
-    field.lineTo(mapWidth / 2, mapHeight / 2);
-    field.lineTo(-mapWidth / 2, mapHeight / 2);
+    // Create the engine
+    var geomEngine = new THREE.BoxGeometry(20, 50, 50, 1, 1, 1);
+    var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, flatShading:THREE.FlatShading});
+    var engine = new THREE.Mesh(geomEngine, matEngine);
+    engine.position.x = 40;
+    engine.castShadow = true;
+    engine.receiveShadow = true;
+    this.mesh.add(engine);
 
-    return field;
+    // Create the tail
+    var geomTailPlane = new THREE.BoxGeometry(15, 20, 5, 1, 1, 1);
+    var matTailPlane = new THREE.MeshPhongMaterial({color:Colors.red, flatShading:THREE.FlatShading});
+    var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
+    tailPlane.position.set(-35, 25, 0);
+    tailPlane.castShadow = true;
+    tailPlane.receiveShadow = true;
+    this.mesh.add(tailPlane);
+
+    // Create the wing
+    var geomSideWing = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
+    var matSideWing = new THREE.MeshPhongMaterial({color:Colors.red, flatShading:THREE.FlatShading});
+    var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
+    sideWing.castShadow = true;
+    sideWing.receiveShadow = true;
+    this.mesh.add(sideWing);
+
+    // Propeller
+    var geomPropeller = new THREE.BoxGeometry(20, 10, 10, 1, 1, 1);
+    var matPropeller = new THREE.MeshPhongMaterial({color:Colors.brownDark, flatShading:THREE.FlatShading});
+    this.propeller = new THREE.Mesh(geomPropeller, matPropeller);
+    this.propeller.castShadow = true;
+    this.propeller.receiveShadow = true;
+
+    // Blades
+    var geomBlade = new THREE.BoxGeometry(1, 100, 20, 1, 1, 1);
+    var matBlade = new THREE.MeshPhongMaterial({color:Colors.brownDark, flatShading:THREE.FlatShading});
+    var blade = new THREE.Mesh(geomBlade, matBlade);
+    blade.position.set(8, 0, 0);
+    blade.castShadow = true;
+    blade.receiveShadow = true;
+    this.propeller.add(blade);
+    this.propeller.position.set(50, 0, 0);
+    this.mesh.add(this.propeller);
+};
+
+// Instantiate the Airplane
+var airplane;
+
+function createPlane() {
+    airplane = new AirPlane();
+    airplane.mesh.scale.set(.25, .25, .25);
+    airplane.mesh.position.y = 100;
+    scene.add(airplane.mesh);
+}
+
+
+/* ----- Making the Animations loop ----- */
+
+function seaLoop() {
+    // Rotate the propeller, the sea and the sky
+    sea.mesh.rotation.z += .005;
+    sky.mesh.rotation.z += .01;
+
+    // update the plane on each frame
+    updatePlane();
+
+    // Render the scene
+    renderer.render(scene, camera);
+
+    // Call the loop function again
+    requestAnimationFrame(seaLoop);
+}
+function oceanLoop() {
+    // Rotate the propeller, the sea and the sky
+    ocean.mesh.rotation.z += .005;
+    sky.mesh.rotation.z += .01;
+
+    // update the plane on each frame
+    updatePlane();
+
+    // Render the scene
+    renderer.render(scene, camera);
+
+    // Call the loop function again
+    requestAnimationFrame(oceanLoop);
+}
+function grassLoop() {
+    // Rotate the propeller, the sea and the sky
+    grass.mesh.rotation.z += .005;
+    sky.mesh.rotation.z += .01;
+
+    // update the plane on each frame
+    updatePlane();
+
+    // Render the scene
+    renderer.render(scene, camera);
+
+    // Call the loop function again
+    requestAnimationFrame(grassLoop);
+}
+function roadLoop() {
+    // Rotate the propeller, the sea and the sky
+    road.mesh.rotation.z += .005;
+    sky.mesh.rotation.z += .01;
+
+    // update the plane on each frame
+    updatePlane();
+
+    // Render the scene
+    renderer.render(scene, camera);
+
+    // Call the loop function again
+    requestAnimationFrame(roadLoop);
+}
+
+
+/* ----------------------------- */
+/* ----- User interaction ----- */ 
+var mousePos = {x:0, y:0};
+
+function handleMouseMove(event) {
+    // Here we are converting the mouse position value received
+    // to a normalized value varying between -1 and 1;
+    // this is the formula for the horizontal axis:
+
+    var tx = -1 + (event.clientX / WIDTH) * 2;
+
+    // for the vertical axis, we need to inverse the formula
+    // because the 2D y-axis goes the opposite direction of the 3D y-axis
+
+    var ty = 1 - (event.clientY / HEIGHT) * 2;
+    mousePos = {x:tx, y:ty};
+}
+
+function updatePlane() {
+    // Let's move the airplane between -100 and 100 on the horizontal axis,
+    // and between 25 and 175 on the vertical axis,
+    // depending on the mouse position which ranges between -1 and 1 on both axes;
+    // to achieve that we use a normalize function
+
+    var targetX = normalize(mousePos.x, -.75, .75, -100, 100);
+    var targetY = normalize(mousePos.y, -.75, .75, 25, 175);
+
+    // Move the plane at each frame by adding a fraction of the remaining distance
+    airplane.mesh.position.y += (targetY - airplane.mesh.position.y) * 0.1;
+
+    // Rotate the plane proportionally to the remaining distance
+    airplane.mesh.rotation.z = (targetY - airplane.mesh.position.y) * 0.0128;
+    airplane.mesh.rotation.x = (airplane.mesh.position.y - targetY) * 0.0064;
+
+    airplane.propeller.rotation.x += 0.3;
+}
+
+function normalize(v, vmin, vmax, tmin, tmax) {
+    var nv = Math.max(Math.min(v,vmax), vmin);
+    var dv = vmax - vmin;
+    var pc = (nv - vmin) / dv;
+    var dt = tmax - tmin;
+    var tv = tmin + (pc * dt);
+    return tv;
 }
