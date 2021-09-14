@@ -12,9 +12,20 @@ var Colors = {
     blue:0x68c3c0,
     grass:0x567d46,
     road:0x47484c,
-    ocean: 0x064273,
-    ground: 0xcecdcb
+    ocean:0x064273,
+    ground:0xcecdcb,
+    brick:0x9d6055,
+    glass:0xa8ccd7,
+    wheel:0x040309
 };
+var Paint = [
+    0xf25346,
+    0xd8d0d1,
+    0x59332e,
+    0x23190f,
+    0x68c3c0,
+    0x9d6055
+];
 
 // Scene 
 var scene, camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH, renderer, container;
@@ -37,7 +48,9 @@ function init() {
     // createSea();
     // createOcean();
     // createGrass();
-    createRoad();
+    // createRoad();
+    // createCity();
+    createTown();
     createSky();
 
     // Add the listener
@@ -48,7 +61,9 @@ function init() {
     // seaLoop();
     // oceanLoop();
     // grassLoop();
-    roadLoop();
+    // roadLoop();
+    // cityLoop();
+    townLoop();
 }
 
 /* ----- Running the visuals ----- */
@@ -164,7 +179,10 @@ function createLights() {
     scene.add(ambientLight);
 }
 
-/* ----- Creating the floor object ----- */
+
+/* ------------------------------------------------ */
+/* ----- Creating the different floor objects ----- */
+/* ------------------------------------------------ */
 
 // Constructors
 var Sea = function() {
@@ -236,6 +254,13 @@ var Grass = function() {
     // Allow the sea to receive shadows
     this.mesh.receiveShadow = true;
 };
+var Marking = function() {
+    var geomLanes = new THREE.PlaneGeometry(20, 5);
+    var matLanes = new THREE.MeshPhongMaterial({color:Colors.white, flatShading:THREE.FlatShading});
+    this.mesh = new THREE.Mesh(geomLanes, matLanes);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+};
 var Road = function() {
     // create the geometry (shape) of the cylinder;
     // the parameters are: 
@@ -260,17 +285,173 @@ var Road = function() {
     this.mesh.receiveShadow = true;
 
     // Additional road markings
-    /*var geomEngine = new THREE.BoxGeometry(20, 50, 50, 1, 1, 1);
-    var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, flatShading:THREE.FlatShading});
-    var engine = new THREE.Mesh(geomEngine, matEngine);
-    engine.position.x = 40;
-    engine.castShadow = true;
-    engine.receiveShadow = true;
-    this.mesh.add(engine);*/
+    // To distribute the clouds consistently, 
+    // we need to place them according to a uniform angle
+    var stepAngle = Math.PI * 2 / 50;
+    // Create the lines
+    for (var i = 0; i < 50; i++) {
+        var m = new Marking();
+        // Set the rotation and the position of each cloud;
+        // for that we use a bit of trigonometry 
+        var a = stepAngle * i; // this is the final angle of the cloud
+        // var h = 750 + Math.random() * 200;
+        var h = 600;
+        // this is the distance between the center of the axis and the cloud itself
+        // We are simply converting polar coordants (angle, distance) into Cartesian Coordinates (x, y)
+        m.mesh.position.y = Math.sin(a)*h;
+        m.mesh.position.x = Math.cos(a)*h;
+        // Rotate the cloud according to its position
+        m.mesh.rotation.z = a + Math.PI/2;
+        // for a better result, we position the clouds
+        // at random depths inside of the scene
+        m.mesh.position.z = -50;
+        // Add the mesh of each scene  
+        this.mesh.add(m.mesh);
+    }
+};
+var Building = function(height) {
+    var geomBuilding = new THREE.BoxGeometry(Math.floor(Math.random()*50)+50, height, Math.floor(Math.random()*50)+50, 1, 1, 1);
+    var matBuilding = new THREE.MeshPhongMaterial({color:pickRandom(Paint), flatShading:THREE.FlatShading});
+    this.mesh = new THREE.Mesh(geomBuilding, matBuilding);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+};
+var City = function() {
+    // create the geometry (shape) of the cylinder;
+    // the parameters are: 
+    // radius top, radius bottom, height, number of segments on the radius, number of segments vertically
+    var geom = new THREE.CylinderGeometry(600, 600, 800, 40, 10);
+
+    // Rotate the geometry on the x axis
+    geom.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI/2));
+
+    // Create the material
+    var mat = new THREE.MeshPhongMaterial({
+        color:Colors.road,
+        transparent:true,
+        opacity:.8,
+        flatShading: THREE.FlatShading
+    });
+
+    // Create a Mesh object/material
+    this.mesh = new THREE.Mesh(geom, mat);
+
+    // Allow the sea to receive shadows
+    this.mesh.receiveShadow = true;
+
+    var stepAngle = Math.PI * 2 / 50;
+    for (var i = 0; i < Math.floor(Math.random()*30)+10; i++) {
+        // Random Height
+        var tempH = Math.floor(Math.random()*50)+50;
+        var b = new Building(tempH);
+        // Set the rotation and the position of each cloud;
+        // for that we use a bit of trigonometry 
+        var a = stepAngle * i; // this is the final angle of the cloud
+        // var h = 750 + Math.random() * 200;
+        var h = 590 + (tempH/2);
+        // this is the distance between the center of the axis and the cloud itself
+        // We are simply converting polar coordants (angle, distance) into Cartesian Coordinates (x, y)
+        b.mesh.position.y = Math.sin(a)*h;
+        b.mesh.position.x = Math.cos(a)*h;
+        // Rotate the cloud according to its position
+        b.mesh.rotation.z = a + Math.PI/2;
+        // for a better result, we position the clouds
+        // at random depths inside of the scene
+        b.mesh.position.z = -100+Math.random()*100;
+        // Add the mesh of each scene  
+        this.mesh.add(b.mesh);
+    }
+};
+var House = function() {
+    // Main section
+    var geomBuilding = new THREE.BoxGeometry(50, 50, 50, 1, 1, 1);
+    var matBuilding = new THREE.MeshPhongMaterial({color:pickRandom(Paint), flatShading:THREE.FlatShading});
+    this.mesh = new THREE.Mesh(geomBuilding, matBuilding);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+
+    // Roof 
+    var geomRoof = new THREE.ConeGeometry(40, 30, 4);
+    var matRoof = new THREE.MeshPhongMaterial({color:Colors.brick, flatShading:THREE.FlatShading});
+    var roof = new THREE.Mesh(geomRoof, matRoof);
+    roof.castShadow = true;
+    roof.receiveShadow = true;
+    roof.position.y = -39;
+    roof.rotation.z = 3.2;
+    roof.rotation.y = .8;
+    this.mesh.add(roof);
+
+    // Door
+    var geomDoor = new THREE.PlaneGeometry(10, 15);
+    var matDoor = new THREE.MeshPhongMaterial({color:Colors.white, flatShading:THREE.FlatShading});
+    var door = new THREE.Mesh(geomDoor, matDoor);
+    door.castShadow = true;
+    door.receiveShadow = true;
+    door.position.y = 15;
+    door.position.z = 25;
+    this.mesh.add(door);
+
+    // Windows
+    for (var i = 0; i <= 20; i += 20) {
+        var geomWindow = new THREE.PlaneGeometry(7, 7);
+        var matWindow = new THREE.MeshPhongMaterial({color:Colors.glass, flatShading:THREE.FlatShading});
+        var window = new THREE.Mesh(geomWindow, matWindow);
+        window.castShadow = true;
+        window.receiveShadow = true;
+        window.position.x = -10 + i;
+        window.position.y = -10;
+        window.position.z = 25;
+        this.mesh.add(window);
+    }
+};
+var Town = function() {
+    // create the geometry (shape) of the cylinder;
+    // the parameters are: 
+    // radius top, radius bottom, height, number of segments on the radius, number of segments vertically
+    var geom = new THREE.CylinderGeometry(600, 600, 800, 40, 10);
+
+    // Rotate the geometry on the x axis
+    geom.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI/2));
+
+    // Create the material
+    var mat = new THREE.MeshPhongMaterial({
+        color:Colors.grass,
+        transparent:true,
+        opacity:.8,
+        flatShading: THREE.FlatShading
+    });
+
+    // Create a Mesh object/material
+    this.mesh = new THREE.Mesh(geom, mat);
+
+    // Allow the sea to receive shadows
+    this.mesh.receiveShadow = true;
+
+    var stepAngle = Math.PI * 2 / 50;
+    for (var i = 0; i < Math.floor(Math.random()*30)+10; i++) {
+        // Random Height
+        var b = new House();
+        // Set the rotation and the position of each cloud;
+        // for that we use a bit of trigonometry 
+        var a = stepAngle * i; // this is the final angle of the cloud
+        // var h = 750 + Math.random() * 200;
+        var h = 620;
+        // this is the distance between the center of the axis and the cloud itself
+        // We are simply converting polar coordants (angle, distance) into Cartesian Coordinates (x, y)
+        b.mesh.position.y = Math.sin(a)*h;
+        b.mesh.position.x = Math.cos(a)*h;
+        // Rotate the cloud according to its position
+        b.mesh.rotation.z = a + Math.PI/2;
+        // for a better result, we position the clouds
+        // at random depths inside of the scene
+        b.mesh.position.z = -200;
+        // Add the mesh of each scene  
+        this.mesh.add(b.mesh);
+    }
 };
 
 // Instantiate the floor and add it to the scene:
-var sea, ocean, grass, road;
+var sea, ocean, grass, road, city, town;
 
 function createSea() {
     sea = new Sea();
@@ -307,6 +488,24 @@ function createRoad() {
 
     // Add the mesh of the sea to the scene
     scene.add(road.mesh);
+}
+function createCity() {
+    city = new City();
+
+    // Push it a little bit at the bottom of the scene to add effect
+    city.mesh.position.y = -600;
+
+    // Add the mesh of the sea to the scene
+    scene.add(city.mesh);
+}
+function createTown() {
+    town = new Town();
+
+    // Push it a little bit at the bottom of the scene to add effect
+    town.mesh.position.y = -600;
+
+    // Add the mesh of the sea to the scene
+    scene.add(town.mesh);
 }
 
 /* ----- Creating Clouds and objects ----- */
@@ -429,10 +628,10 @@ var AirPlane  = function() {
     this.mesh.add(engine);
 
     // Create the tail
-    var geomTailPlane = new THREE.BoxGeometry(15, 20, 5, 1, 1, 1);
+    var geomTailPlane = new THREE.BoxGeometry(20, 30, 5, 1, 1, 1);
     var matTailPlane = new THREE.MeshPhongMaterial({color:Colors.red, flatShading:THREE.FlatShading});
     var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
-    tailPlane.position.set(-35, 25, 0);
+    tailPlane.position.set(-40, 25, 0);
     tailPlane.castShadow = true;
     tailPlane.receiveShadow = true;
     this.mesh.add(tailPlane);
@@ -462,6 +661,43 @@ var AirPlane  = function() {
     this.propeller.add(blade);
     this.propeller.position.set(50, 0, 0);
     this.mesh.add(this.propeller);
+
+    // Windshield Glass
+    var geomGlass = new THREE.BoxGeometry(5, 30, 50, 1, 1, 1);
+    var matGlass = new THREE.MeshPhongMaterial({color:Colors.glass, flatShading:THREE.FlatShading});
+    var glass = new THREE.Mesh(geomGlass, matGlass);
+    glass.castShadow = true;
+    glass.receiveShadow = true;
+    glass.position.y = 40;
+    glass.position.x = 20;
+    this.mesh.add(glass);
+
+    // Wheels
+    var geomWheel = new THREE.BoxGeometry(10, 10, 5, 1, 1, 1);
+    var matWheel = new THREE.MeshPhongMaterial({color:Colors.wheel, flatShading:THREE.FlatShading});
+    var wheel = new THREE.Mesh(geomWheel, matWheel);
+    wheel.castShadow = true;
+    wheel.receiveShadow = true;
+    wheel.position.y = -30;
+    wheel.position.x = -25;
+    this.mesh.add(wheel);
+    var geomWheelFLC = new THREE.BoxGeometry(20, 10, 10, 1, 1, 1);
+    var matWheelFLC = new THREE.MeshPhongMaterial({color:Colors.red, flatShading:THREE.FlatShading});
+    var wheelFLC = new THREE.Mesh(geomWheelFLC, matWheelFLC);
+    wheelFLC.castShadow = true;
+    wheelFLC.receiveShadow = true;
+    wheelFLC.position.y = -30;
+    wheelFLC.position.x = 25;
+    wheelFLC.position.z = 30;
+    this.mesh.add(wheelFLC);
+    var geomWheelFR = new THREE.BoxGeometry(15, 15, 10, 1, 1, 1);
+    var matWheelFR = new THREE.MeshPhongMaterial({color:Colors.wheel, flatShading:THREE.FlatShading});
+    var wheelFR = new THREE.Mesh(geomWheelFR, matWheelFR);
+    wheelFR.castShadow = true;
+    wheelFR.receiveShadow = true;
+    wheelFR.position.y = -40;
+    wheelFR.position.x = 25;
+    this.mesh.add(wheelFR);
 };
 
 // Instantiate the Airplane
@@ -503,7 +739,7 @@ function oceanLoop() {
     renderer.render(scene, camera);
 
     // Call the loop function again
-    requestAnimationFrame(oceanLoop);
+    // requestAnimationFrame(oceanLoop);
 }
 function grassLoop() {
     // Rotate the propeller, the sea and the sky
@@ -532,6 +768,34 @@ function roadLoop() {
 
     // Call the loop function again
     requestAnimationFrame(roadLoop);
+}
+function cityLoop() {
+    // Rotate the propeller, the sea and the sky
+    city.mesh.rotation.z += .005;
+    sky.mesh.rotation.z += .01;
+
+    // update the plane on each frame
+    updatePlane();
+
+    // Render the scene
+    renderer.render(scene, camera);
+
+    // Call the loop function again
+    requestAnimationFrame(cityLoop);
+}
+function townLoop() {
+    // Rotate the propeller, the sea and the sky
+    town.mesh.rotation.z += .005;
+    sky.mesh.rotation.z += .01;
+
+    // update the plane on each frame
+    updatePlane();
+
+    // Render the scene
+    renderer.render(scene, camera);
+
+    // Call the loop function again
+    // requestAnimationFrame(townLoop);
 }
 
 
@@ -579,4 +843,11 @@ function normalize(v, vmin, vmax, tmin, tmax) {
     var dt = tmax - tmin;
     var tv = tmin + (pc * dt);
     return tv;
+}
+
+/* ---------------------------- */
+/* ----- Helper Functions ----- */
+/* ---------------------------- */
+function pickRandom(array) {
+    return array[Math.floor(Math.random() * array.length)];
 }
