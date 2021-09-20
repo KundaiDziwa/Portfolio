@@ -1,4 +1,5 @@
-function switchBackground(time) {
+function switchBackground() {
+    var time = sessionStorage.getItem("Time");
     if (time == "day") {
         document.getElementById("world").style.background = "linear-gradient(#c9f6ff, #35d6ed)";
     }
@@ -14,4 +15,14 @@ function switchBackground(time) {
     if (time == "cloudy") {
         document.getElementById("world").style.background = "linear-gradient(#d2dfe5, #becdd4)";
     }
+}
+function saveTimeState(input) {
+    sessionStorage.setItem("Time", input);
+    switchBackground(); 
+}
+function savePlaceState(input) {
+    sessionStorage.setItem("Place", input);
+}
+function saveControl(input) {
+    sessionStorage.setItem("Control", input);
 }

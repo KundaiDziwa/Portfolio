@@ -10,6 +10,57 @@
     overflow: hidden;
     background: linear-gradient(#e4e0ba, #f7d9aa);
 }
-button{
-    position: relative;
+.time-container{
+    position: absolute;
+    top: 10%;
+    right: 10%;
+    width: 30%;
+    height: 10%;
+    border: 2px solid black;
 }
+.place-container{
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 40%;
+    height: 10%;
+    border: 2px solid black;
+}
+.control-container{
+    position: absolute;
+    top: 85%;
+    right: 10%;
+    width: 10%;
+    height: 10%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 2px solid black;
+}
+/*.switch{
+    width: 8rem;
+    height: 4.5rem;
+    background: #dfe9f5;
+    position: relative;
+    overflow: hidden;
+    padding: 0.7rem;
+    border-radius: 1rem;
+    border: 2px solid black;
+    box-shadow: 4px 4px 30px rgba(0, 0, 0, 0.05),
+                5px 5px 10px rgba(0, 0, 0, 0.05);
+    transform: rotate(90deg);
+}
+.switch label{
+    display: flex;
+    align-content: center;
+    width: 120%;
+    height: 100%;
+    background: #dfe9f5;
+    cursor: pointer;
+}
+.switch label span{
+    display: flex;
+    width: 55%;
+    height: 100%;
+    perspective: 10rem;
+}*/

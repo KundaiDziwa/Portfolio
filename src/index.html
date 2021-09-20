@@ -11,10 +11,41 @@
 </head>
 <body>
     <div id="world"></div>
-    <button type="button" onmousedown="switchBackground('day');">Day</button>
-    <button type="button" onmousedown="switchBackground('night');">Night</button>
-    <button type="button" onmousedown="switchBackground('dusk');">Dusk</button>
-    <button type="button" onmousedown="switchBackground('dawn');">Dawn</button>
-    <button type="button" onmousedown="switchBackground('cloudy');">Cloudy</button>
+    <div class="time-container">
+        <input type="radio" name="time-switch" id="day" onclick="saveTimeState('day');">
+        <label class="switch" for="day"><span>day</span></label>
+        <input type="radio" name="time-switch" id="night" onclick="saveTimeState('night');">
+        <label for="night"><span></span></label>
+        <input type="radio" name="time-switch" id="dusk" onclick="saveTimeState('dusk');">
+        <label for="dusk"><span></span></label>
+        <input type="radio" name="time-switch" id="dawn" onclick="saveTimeState('dawn');">
+        <label for="dawn"><span></span></label>
+        <input type="radio" name="time-switch" id="cloudy" onclick="saveTimeState('cloudy');">
+        <label for="cloudy"><span></span></label>
+    </div>
+    <!-- Two sides of buttons layed out -->
+    <div class="place-container">
+        <input type="radio" name="place-switch" id="runway" onclick="savePlaceState('runway');">
+        <label for="runway"><span></span></label>
+        <input type="radio" name="place-switch" id="city" onclick="savePlaceState('city');">
+        <label for="city"><span></span></label>
+        <input type="radio" name="place-switch" id="town" onclick="savePlaceState('town');">
+        <label for="town"><span></span></label>
+        <input type="radio" name="place-switch" id="grass" onclick="savePlaceState('grass');">
+        <label for="grass"><span></span></label>
+        <input type="radio" name="place-switch" id="forest" onclick="savePlaceState('forest');">
+        <label for="forest"><span></span></label>
+        <input type="radio" name="place-switch" id="ocean" onclick="savePlaceState('ocean');">
+        <label for="ocean"><span></span></label>
+        <input type="radio" name="place-switch" id="sea" onclick="savePlaceState('sea');">
+        <label for="sea"><span></span></label>
+    </div>
+    <!-- Control setting buttons -->
+    <div class="control-container">
+        <input type="radio" name="control-switch" id="autoP" onclick="saveControl('auto');">
+        <label for="autoP"><span></span></label>
+        <input type="radio" name="control-switch" id="manual" onclick="saveControl('manual');">
+        <label for="manual"><span></span></label>
+    </div>
 </body>
 </html>
