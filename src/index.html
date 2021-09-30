@@ -8,44 +8,83 @@
     <link rel="stylesheet" href="main_style.css">
     <script type="module" src="home.js"></script>
     <script src="location.js"></script>
+    <script src= "https://cdn.zingchart.com/zingchart.min.js"></script>
+    <script src="gauges.js"></script>
 </head>
 <body>
     <div id="world"></div>
-    <div class="time-container">
-        <input type="radio" name="time-switch" id="day" onclick="saveTimeState('day');">
-        <label class="switch" for="day"><span>day</span></label>
-        <input type="radio" name="time-switch" id="night" onclick="saveTimeState('night');">
-        <label for="night"><span></span></label>
-        <input type="radio" name="time-switch" id="dusk" onclick="saveTimeState('dusk');">
-        <label for="dusk"><span></span></label>
-        <input type="radio" name="time-switch" id="dawn" onclick="saveTimeState('dawn');">
-        <label for="dawn"><span></span></label>
-        <input type="radio" name="time-switch" id="cloudy" onclick="saveTimeState('cloudy');">
-        <label for="cloudy"><span></span></label>
+
+    <!-- Time and place button settings -->
+    <div class="container time-container">
+        <h2 class="settings">Time Settings</h2>
+        <span class="inpt-btn">
+            <input type="radio" name="time-switch" id="day" onclick="saveTimeState('day');">
+            <label class="switch" for="day">Day</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="time-switch" id="night" onclick="saveTimeState('night');">
+            <label for="night">Night</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="time-switch" id="dusk" onclick="saveTimeState('dusk');">
+            <label for="dusk">Dusk</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="time-switch" id="dawn" onclick="saveTimeState('dawn');">
+            <label for="dawn">Dawn</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="time-switch" id="cloudy" onclick="saveTimeState('cloudy');">
+            <label for="cloudy">Cloudy</label>
+        </span>
     </div>
-    <!-- Two sides of buttons layed out -->
-    <div class="place-container">
-        <input type="radio" name="place-switch" id="runway" onclick="savePlaceState('runway');">
-        <label for="runway"><span></span></label>
-        <input type="radio" name="place-switch" id="city" onclick="savePlaceState('city');">
-        <label for="city"><span></span></label>
-        <input type="radio" name="place-switch" id="town" onclick="savePlaceState('town');">
-        <label for="town"><span></span></label>
-        <input type="radio" name="place-switch" id="grass" onclick="savePlaceState('grass');">
-        <label for="grass"><span></span></label>
-        <input type="radio" name="place-switch" id="forest" onclick="savePlaceState('forest');">
-        <label for="forest"><span></span></label>
-        <input type="radio" name="place-switch" id="ocean" onclick="savePlaceState('ocean');">
-        <label for="ocean"><span></span></label>
-        <input type="radio" name="place-switch" id="sea" onclick="savePlaceState('sea');">
-        <label for="sea"><span></span></label>
+    <div class="container place-container">
+        <h2 class="settings">Location Settings</h2>
+        <span class="inpt-btn">
+            <input type="radio" name="place-switch" id="runway" onclick="savePlaceState('runway');">
+            <label for="runway">Runway</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="place-switch" id="city" onclick="savePlaceState('city');">
+            <label for="city">City</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="place-switch" id="town" onclick="savePlaceState('town');">
+            <label for="town">Town</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="place-switch" id="grass" onclick="savePlaceState('grass');">
+            <label for="grass">Grass</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="place-switch" id="forest" onclick="savePlaceState('forest');">
+            <label for="forest">Forest</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="place-switch" id="ocean" onclick="savePlaceState('ocean');">
+            <label for="ocean">Ocean</label>
+        </span>
+        <span class="inpt-btn">
+            <input type="radio" name="place-switch" id="sea" onclick="savePlaceState('sea');">
+            <label for="sea">Sea</label>
+        </span>
     </div>
     <!-- Control setting buttons -->
     <div class="control-container">
-        <input type="radio" name="control-switch" id="autoP" onclick="saveControl('auto');">
-        <label for="autoP"><span></span></label>
-        <input type="radio" name="control-switch" id="manual" onclick="saveControl('manual');">
-        <label for="manual"><span></span></label>
+        <h2 class="settings">Flight Control</h2>
+        <span class="inpt-btn">
+            <input type="radio" name="control-switch" id="autoP" onclick="saveControl('auto');">
+            <label for="autoP">Auto Pilot</label>
+        </span>
+        <span class="container inpt-btn">
+            <input type="radio" name="control-switch" id="manual" onclick="saveControl('manual');">
+            <label for="manual">Manual</label>
+        </span>
     </div>
+
+    <div class="charts" id='myChart'></div>
+    <div class="charts" id='myChart1'></div>
+    <div class="charts" id='myChart2'></div>
+    <div class="charts" id='compass'></div>
 </body>
 </html>

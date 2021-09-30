@@ -10,57 +10,115 @@
     overflow: hidden;
     background: linear-gradient(#e4e0ba, #f7d9aa);
 }
+.container:before{
+    position: absolute;
+    background: inherit;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 200px rgba(255, 255, 255, .5);
+    filter: blur(10px);
+    margin: -20px;
+}
 .time-container{
+    font-size: 1vw;
     position: absolute;
-    top: 10%;
-    right: 10%;
-    width: 30%;
-    height: 10%;
-    border: 2px solid black;
-}
-.place-container{
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    width: 40%;
-    height: 10%;
-    border: 2px solid black;
-}
-.control-container{
-    position: absolute;
-    top: 85%;
-    right: 10%;
+    top: 65%;
+    right: 2.5%;
     width: 10%;
-    height: 10%;
+    height: 30%;
     align-items: center;
     justify-content: center;
+    display: flex;
     flex-direction: column;
-    border: 2px solid black;
+    border-radius: 5px;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2);
+    background: inherit;
+    padding: 0.5rem;
 }
-/*.switch{
-    width: 8rem;
-    height: 4.5rem;
-    background: #dfe9f5;
+.place-container{
+    font-size: 1vw;
+    position: absolute;
+    top: 10%;
+    right: 2.5%;
+    width: 10%;
+    height: 45%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2);
+    background: inherit;
+    padding: 0.5rem;
+}
+.control-container{
+    font-size: 1vw;
+    position: absolute;
+    top: 70%;
+    left: 2.5%;
+    width: 7.5%;
+    height: 20%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2);
+    background: inherit;
+    padding: 0.5rem;
+}
+
+/* ----- Input Buttons ----- */
+.inpt-btn{
     position: relative;
-    overflow: hidden;
-    padding: 0.7rem;
-    border-radius: 1rem;
-    border: 2px solid black;
-    box-shadow: 4px 4px 30px rgba(0, 0, 0, 0.05),
-                5px 5px 10px rgba(0, 0, 0, 0.05);
-    transform: rotate(90deg);
 }
-.switch label{
-    display: flex;
-    align-content: center;
-    width: 120%;
-    height: 100%;
-    background: #dfe9f5;
+.inpt-btn input{
+    position: absolute;
+    opacity: 0;
+}
+.inpt-btn label{
+    display: inline-block;
+    background: linear-gradient(#f07470, #dc1c13);
+    border-radius: 1em;
+    border-bottom: solid 4px #f6bdc0;
+    padding: 10px;
+    margin-top: 0;
+    vertical-align: bottom;
     cursor: pointer;
+    transition: 0.25s ease-in-out;
 }
-.switch label span{
-    display: flex;
-    width: 55%;
+.inpt-btn :checked + label{
+    background: linear-gradient(#83d475, #2eb62c);
+    border-bottom: solid 1px #c5e8b7;
+}
+
+/* ----- Gauge meters ----- */
+#myChart {
     height: 100%;
-    perspective: 10rem;
-}*/
+    width: 25%;
+    position: absolute;
+    top: 10%
+}
+#myChart1 {
+    height: 100%;
+    width: 25%;
+    position: absolute;
+    top: 25%
+}
+#myChart2 {
+    height: 100%;
+    width: 25%;
+    position: absolute;
+    top: 40%
+}
+#compass {
+    height: 100%;
+    width: 25%;
+    position: absolute;
+    top: 55%
+}
+.zc-ref {
+    display: none;
+}

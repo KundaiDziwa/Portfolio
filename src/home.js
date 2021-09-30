@@ -49,6 +49,9 @@ function init() {
     // add the objects
     createPlane();
 
+    // Adding gauges
+    
+
     // Creating the time of day
     if (time == "day" || time == "dawn" || time == "cloudy" || time == null) {
         createSky();
