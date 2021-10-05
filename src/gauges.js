@@ -11,7 +11,8 @@ window.feed = function(callback) {
   var myConfig = {
     type: "gauge",
     globals: {
-      fontSize: 7.5
+      fontSize: 7.5,
+      alpha:0.5
     },
     plotarea: {
       marginTop: 30
@@ -111,100 +112,37 @@ window.feed = function(callback) {
   };
    
   var myConfig1 = {
-    type: "gauge",
-    globals: {
-      fontSize: 7.5
-    },
-    plotarea: {
-      marginTop: 30
-    },
+    type: "radar",
     plot: {
-      size: '100%',
-      valueBox: {
-        placement: 'center',
-        text: '%v', //default
-        fontSize: 7.5,
-        rules: [{
-            rule: '%v >= 700',
-            text: '%v<br>EXCELLENT'
-          },
-          {
-            rule: '%v < 700 && %v > 640',
-            text: '%v<br>Good'
-          },
-          {
-            rule: '%v < 640 && %v > 580',
-            text: '%v<br>Fair'
-          },
-          {
-            rule: '%v <  580',
-            text: '%v<br>Bad'
-          }
-        ]
+      aspect: "area"
+    },
+    'scale-v': {
+      values: "0:100:25",
+      labels: [ '', '', '', '', '' ],
+      'ref-line': {
+        'line-color': "none"
+      },
+      guide: {
+        'line-style': "solid"
       }
     },
-    tooltip: {
-      borderRadius: 5
-    },
-    scaleR: {
-      aperture: 200,
-      minValue: 300,
-      maxValue: 850,
-      step: 50,
-      center: {
-        visible: false
-      },
-      tick: {
-        visible: false
-      },
-      item: {
-        offsetR: 0,
-        rules: [{
-          rule: '%i == 9',
-          offsetX: 15
-        }]
-      },
-      labels: ['300', '', '', '', '', '', '580', '640', '700', '750', '', '850'],
-      ring: {
-        size: 15,
-        rules: [{
-            rule: '%v <= 580',
-            backgroundColor: '#E53935'
-          },
-          {
-            rule: '%v > 580 && %v < 640',
-            backgroundColor: '#EF5350'
-          },
-          {
-            rule: '%v >= 640 && %v < 700',
-            backgroundColor: '#FFA726'
-          },
-          {
-            rule: '%v >= 700',
-            backgroundColor: '#29B6F6'
-          }
-        ]
+    'scale-k': {
+      values: "0:330:30",
+      format: "%v°",
+      aspect: "circle", //To set the chart shape to circular.
+      guide: {
+        'line-style': "solid"
       }
-    },
-    refresh: {
-        type: "feed",
-        transport: "js",
-        url: "feed()",
-        interval: 15000,
-        resetTimeout: 1000
     },
     series: [{
-        values: [755], // starting value
-        backgroundColor: 'black',
-        indicator: [2.5, 2.5, 2.5, 2.5, 0.6],
-        animation: {
-        effect: 2,
-        method: 1,
-        sequence: 4,
-        speed: 900
-        },
+      values: [59, 30, 65, 34, 40, 33, 31, 90, 81, 70, 100, 28]
+    }, {
+      values: [30, 100, 90, 99, 59, 34, 5, 3, 12, 15, 16, 75, 34]
+    }, {
+      values: [34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 100]
     }]
 };
+
 window.feed = function(callback) {
     var tick = {
     };
@@ -215,77 +153,51 @@ window.feed = function(callback) {
   var myConfig2 = {
     type: "gauge",
     globals: {
-      fontSize: 7.5
+      fontSize: 0
     },
-    plotarea: {
-      marginTop: 30
+    scale: {
+      'size-factor':0.7   //Provide a decimal or percentage value.
     },
-    plot: {
-      size: '100%',
-      valueBox: {
-        placement: 'center',
-        text: '%v', //default
-        fontSize: 7.5,
-        rules: [{
-            rule: '%v >= 700',
-            text: '%v<br>EXCELLENT'
-          },
-          {
-            rule: '%v < 700 && %v > 640',
-            text: '%v<br>Good'
-          },
-          {
-            rule: '%v < 640 && %v > 580',
-            text: '%v<br>Fair'
-          },
-          {
-            rule: '%v <  580',
-            text: '%v<br>Bad'
-          }
-        ]
-      }
+    'scale-2': {
+      'size-factor':1
     },
-    tooltip: {
-      borderRadius: 5
-    },
-    scaleR: {
-      aperture: 200,
-      minValue: 300,
-      maxValue: 850,
-      step: 50,
+    'scale-r': { //Default Scale
+      aperture:200,     //Provide your gauge chart's range.
+      aperture:200,
+      minValue: 0,
+      maxValue: 200,
       center: {
-        visible: false
+        size:2,
+        'background-color': "#66CCFF #FFCCFF",
+        'border-color': "none"
+      },
+      ring: {
+        size: 2
       },
       tick: {
-        visible: false
+        visible: true,
+        size: 4
+      }
+    },
+    'scale-r-2': { //Additional Scale
+      aperture:250,
+      minValue: 0,
+      maxValue: 200,
+      step: 20,
+      center: {
+        size:4,
+        'background-color': "#66CCFF #FFCCFF",
+        'border-color': "none"
       },
-      item: {
-        offsetR: 0,
-        rules: [{
-          rule: '%i == 9',
-          offsetX: 15
-        }]
-      },
-      labels: ['300', '', '', '', '', '', '580', '640', '700', '750', '', '850'],
       ring: {
-        size: 15,
-        rules: [{
-            rule: '%v <= 580',
-            backgroundColor: '#E53935'
-          },
-          {
-            rule: '%v > 580 && %v < 640',
-            backgroundColor: '#EF5350'
-          },
-          {
-            rule: '%v >= 640 && %v < 700',
-            backgroundColor: '#FFA726'
-          },
-          {
-            rule: '%v >= 700',
-            backgroundColor: '#29B6F6'
-          }
-        ]
+        size: 2
+      },
+      tick: {
+        visible: true,
+        size: 4
+      },
+      guide: {
+        alpha:0     //Make sure your larger scale's background is set to transparent.
       }
     },
     refresh: {
@@ -295,17 +207,29 @@ window.feed = function(callback) {
         interval: 15000,
         resetTimeout: 1000
     },
-    series: [{
-        values: [755], // starting value
-        backgroundColor: 'black',
-        indicator: [2.5, 2.5, 2.5, 2.5, 0.6],
+    series: [
+      {
+        values: [50],
+        indicator: [2, .5, 2.5, 2.5, 5],
         animation: {
-        effect: 2,
-        method: 1,
-        sequence: 4,
-        speed: 900
-        },
-    }]
+          effect: 2,
+          method: 1,
+          sequence: 4,
+          speed: 900
+        }
+      },
+      {
+        values: [100],
+        scales: "scale-2,scale-r-2", //Specify which scale your data should plot to.
+        indicator: [2, .5, 2.5, 2.5, 5],
+        animation: {
+          effect: 2,
+          method: 1,
+          sequence: 4,
+          speed: 900
+        }
+      }
+    ]
 };
 window.feed = function(callback) {
     var tick = {
@@ -351,7 +275,7 @@ window.feed = function(callback) {
       borderRadius: 5
     },
     scaleR: {
-      aperture: 200,
+      aperture: 220,
       minValue: 300,
       maxValue: 850,
       step: 50,
@@ -359,7 +283,8 @@ window.feed = function(callback) {
         visible: false
       },
       tick: {
-        visible: false
+        visible: true,
+        size: 5
       },
       item: {
         offsetR: 0,
@@ -370,24 +295,10 @@ window.feed = function(callback) {
       },
       labels: ['300', '', '', '', '', '', '580', '640', '700', '750', '', '850'],
       ring: {
-        size: 15,
-        rules: [{
-            rule: '%v <= 580',
-            backgroundColor: '#E53935'
-          },
-          {
-            rule: '%v > 580 && %v < 640',
-            backgroundColor: '#EF5350'
-          },
-          {
-            rule: '%v >= 640 && %v < 700',
-            backgroundColor: '#FFA726'
-          },
-          {
-            rule: '%v >= 700',
-            backgroundColor: '#29B6F6'
+        size: 2,
+        rules: {
+            backgroundColor: '#989898'
           }
-        ]
       }
     },
     refresh: {
@@ -400,7 +311,7 @@ window.feed = function(callback) {
     series: [{
         values: [755], // starting value
         backgroundColor: 'black',
-        indicator: [2.5, 2.5, 2.5, 2.5, 0.6],
+        indicator: [1.5, .5, 2.5, 2.5, 6],
         animation: {
         effect: 2,
         method: 1,
@@ -423,21 +334,21 @@ window.onload=function() {
     // Normal gauge
     zingchart.render({
         id: 'myChart1',
-        data: myConfig,
+        data: myConfig1,
         height: 125,
         width: '100%'
     });
     // Normal gauge
     zingchart.render({
         id: 'myChart2',
-        data: myConfig,
+        data: myConfig2,
         height: 125,
         width: '100%'
     });
     // Compass
     zingchart.render({
         id: 'compass',
-        data: myConfig,
+        data: myConfigC,
         height: 125,
         width: '100%'
     });
