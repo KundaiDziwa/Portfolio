@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
     <link rel="stylesheet" href="main_style.css">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;1,400&display=swap" rel="stylesheet">
+
     <script type="module" src="home.js"></script>
     <script src="location.js"></script>
     <script src= "https://cdn.zingchart.com/zingchart.min.js"></script>
@@ -13,6 +21,24 @@
 </head>
 <body>
     <div id="world"></div>
+
+    <!-- Nav Bar -->
+    <nav>
+        <a href="index.html"><img src="/Images/icons/home.png"></a>
+        <div class="nav-links">
+            <ul>
+                <li><a href="">PROJECTS</a></li>
+                <li><a href="">ABOUT</a></li>
+                <li><a href="">CONTACT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Title -->
+    <div class="title-cont">
+        <span class="p-title">Kundai's Portfolio</span>
+        <span class="sub-title">Take a Trip and Fly through my Projects</span>
+    </div>
 
     <!-- Time and place button settings -->
     <div class="container time-container">
@@ -86,5 +112,22 @@
     <div class="charts" id='myChart1'></div>
     <div class="charts" id='myChart2'></div>
     <div class="charts" id='compass'></div>
+
+    <!-- Footer section -->
+    <footer>
+        <div class="footer-content" id="foot">
+            <h3>Kundai Dziwa Projects Portfolio Website.</h3>
+            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quae quos mollitia magni debitis. Provident, quisquam.</p>
+            <ul class="socials">
+                <li><a href="#"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+                <li><a href="#"><i class="fa fa-envelope" aria-hidden="true"></i></a></li>
+                <li><a href="#"><i class="fa fa-phone-square" aria-hidden="true"></i></a></li>
+                <li><a href="#"><i class="fa fa-linkedin-square" aria-hidden="true"></i></a></li>
+            </ul>
+        </div>
+        <div class="footer-bottom">
+            <p>copyright &copy;2021 Portfolio Designed by <span>Kundai Dziwa</p>
+        </div>
+    </footer>
 </body>
 </html>

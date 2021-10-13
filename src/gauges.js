@@ -10,9 +10,9 @@ window.feed = function(callback) {
    
   var myConfig = {
     type: "gauge",
+    alpha:0,
     globals: {
       fontSize: 7.5,
-      alpha:0.5
     },
     plotarea: {
       marginTop: 30
@@ -113,6 +113,7 @@ window.feed = function(callback) {
    
   var myConfig1 = {
     type: "radar",
+    alpha:0,
     plot: {
       aspect: "area"
     },
@@ -131,16 +132,12 @@ window.feed = function(callback) {
       format: "%v°",
       aspect: "circle", //To set the chart shape to circular.
       guide: {
-        'line-style': "solid"
+        'line-style': "dashed"
       }
     },
-    series: [{
-      values: [59, 30, 65, 34, 40, 33, 31, 90, 81, 70, 100, 28]
-    }, {
-      values: [30, 100, 90, 99, 59, 34, 5, 3, 12, 15, 16, 75, 34]
-    }, {
-      values: [34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 100]
-    }]
+    scale: {
+      'size-factor':1   //Provide a decimal or percentage value.
+    }
 };
 
 window.feed = function(callback) {
@@ -152,6 +149,7 @@ window.feed = function(callback) {
    
   var myConfig2 = {
     type: "gauge",
+    alpha:0,
     globals: {
       fontSize: 0
     },
@@ -197,7 +195,7 @@ window.feed = function(callback) {
         size: 4
       },
       guide: {
-        alpha:0     //Make sure your larger scale's background is set to transparent.
+        alpha:0     // Make sure your larger scale's background is set to transparent.
       }
     },
     refresh: {
@@ -240,6 +238,7 @@ window.feed = function(callback) {
    
   var myConfigC = {
     type: "gauge",
+    alpha:0,
     globals: {
       fontSize: 7.5
     },
