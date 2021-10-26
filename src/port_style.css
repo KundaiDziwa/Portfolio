@@ -194,11 +194,32 @@ nav .fa-bars{
         flex-direction: column-reverse;
         margin: 3.125rem 0; 
     }
+    .col-1 h2{
+        font-size: 2.375rem;
+    }
+    .col-1 h3{
+        font-size: 1rem;
+        color: #707070;
+        font-weight: 100;
+        margin: 1.25rem 0 0.625rem;
+    }
+    .col-1 p{
+        font-size: 0.8rem;
+        color: #b7b7b7;
+        font-weight: 100;
+    }
+    .col-1 h4{
+        margin: 1.0rem 0;
+        font-size: 1.25rem;
+    }
     .col-2{
         flex-basis: 100%;
         margin-bottom: 3.125rem;
     }
     .col-2 .car{
+        width: 66%;
+    }
+    .col-2 .dev{
         width: 66%;
     }
     .color-box{
@@ -209,6 +230,9 @@ nav .fa-bars{
     }
     .col-1 h2{
         font-size: 2rem;
+    }
+    .next-btn {
+        display: none;
     }
 }
 /* Project 2 */
@@ -250,11 +274,11 @@ nav .fa-bars{
     flex-basis: 60%;
     display: flex;
     align-items: center;
-    transform: translateX(-125%);
+    transform: translateX(-135%);
 }
-.col2-rev .car{
-    width: 70%;
-    transform: translateX(100%);
+.col2-rev .delivery{
+    width: 60%;
+    transform: translateX(150%);
 }
 .col2-rev .color-box{
     position: absolute;
@@ -265,13 +289,13 @@ nav .fa-bars{
     height: 100%;
     width: 80%;
     z-index: -1;
-    transform: translateX(9.375rem);
+    transform: translateX(5.375rem);
 }
 .col2-rev .try-btn{
     color: #fff;
     text-align: center;
     cursor: pointer;
-    transform: translateX(-150%);
+    margin: 5%;
 }
 .nb2{
     position: absolute;
@@ -279,20 +303,40 @@ nav .fa-bars{
 }
 @media only screen and (max-width:700px){
     .col2-rev{
+        transform: translateX(-50%);
         flex-basis: 100%;
         margin-bottom: 3.125rem;
     }
-    .col2-rev .car{
+    .col2-rev .delivery{
+        width: 66%;
+    }
+    .col2-rev .inventory{
         width: 66%;
     }
     .col2-rev .color-box{
         transform: translateX(4.6875rem);
     }
     .col1-rev{
+        transform: translateX(0%);
         flex-basis: 100%;
     }
     .col1-rev h2{
         font-size: 2rem;
+    }
+    .col1-rev h3{
+        font-size: 1rem;
+        color: #707070;
+        font-weight: 100;
+        margin: 1.25rem 0 0.625rem;
+    }
+    .col1-rev p{
+        font-size: 0.8rem;
+        color: #b7b7b7;
+        font-weight: 100;
+    }
+    .col1-rev h4{
+        margin: 1.0rem 0;
+        font-size: 1.25rem;
     }
 }
 /* Project 3 */
@@ -300,10 +344,23 @@ nav .fa-bars{
     position: absolute;
     bottom: -200%;
 }
+.col-2 .dev{
+    width: 60%;
+}
+.try-dev{
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    margin: 10%;
+}
 /* Project 4 */
 .nb4{
     position: absolute;
     bottom: -300%;
+}
+.col2-rev .inventory{
+    width: 60%;
+    transform: translateX(150%);
 }
 
 /* ----------------- */
@@ -313,9 +370,9 @@ nav .fa-bars{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
-    height: 30%;
+    height: 45%;
     width: 100%;
     margin-bottom: 3%;
 }
@@ -342,29 +399,6 @@ nav .fa-bars{
     margin: 1.875rem 0;
     font-size: 1rem;
 }
-.watch-btn {
-    width: 8.75rem;
-    border: 0;
-    padding: 0.75rem 0.625rem;
-    outline: none;
-    color: #fff;
-    background: linear-gradient(to right, #fb5283, #ff3527);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: width 0.5s;
-}
-.watch-btn i{
-    font-size: 1rem;
-    margin-left: -1.25rem;
-    visibility: hidden;
-}
-.watch-btn:hover i{
-    visibility: visible;
-    margin-left: 1.25rem;
-}
-.watch-btn:hover{
-    width: 10rem;
-}
 .col-desc::after{
     content: '';
     width: 0.625rem;
@@ -380,7 +414,10 @@ nav .fa-bars{
     display: flex;
     align-items: center;
 }
-.col-info .car{
+.col-info .aero{
+    width: 20%;
+}
+.col-info .arduino{
     width: 50%;
 }
 .col-info .color-box{
@@ -394,8 +431,40 @@ nav .fa-bars{
     z-index: -1;
     transform: translateX(9.375rem);
 }
+.col-info img:hover + .color-box {
+    z-index: 3;
+    transform: translateX(0rem);
+}
+@media only screen and (max-width:700px){
+    .col-info .aero{
+        width: 40%;
+        margin-left: 3rem;
+    }
+    .col-info .arduino{
+        width: 70%;
+    }
+    .col-desc{
+        flex-basis: 100%;
+        margin-bottom: 3.125rem;
+    }
+    .col-desc h2{
+        font-size: 1.875rem;
+    }
+    .col-desc h3{
+        font-size: 1.0rem;
+        color: #707070;
+        font-weight: 100;
+        margin: 1.25rem 0 0.625rem;
+    }
+    .col-info{
+        flex-basis: 100%;
+    }
+    .col-info img:hover{
+        display: none;
+    }
+}
 
-/* ------------------- */
+/* ------------------- */                                                                                                                                                                                                                                                                           
 /* ----- Contact ----- */
 /* ------------------- */
 /* ----- Footer Section ----- */
